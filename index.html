@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nova AI</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0a0f2c;
+      color: white;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #1a1f4c;
+      padding: 1em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .title {
+      font-size: 1.5em;
+    }
+    .settings-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.2em;
+      cursor: pointer;
+    }
+    #settingsPanel {
+      display: none;
+      position: fixed;
+      top: 60px;
+      right: 20px;
+      background: #1a1f4c;
+      padding: 1em;
+      border-radius: 10px;
+      width: 250px;
+      box-shadow: 0 0 10px black;
+    }
+    label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+    input, select {
+      width: 100%;
+      padding: 5px;
+      margin-bottom: 10px;
+    }
+    .login-form, .chat-container {
+      padding: 1em;
+    }
+    .chat-container {
+      display: none;
+    }
+    button {
+      background-color: #2979ff;
+      color: white;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="title">Nova AI</div>
+    <button class="settings-btn" onclick="toggleSettings()">⚙️</button>
+  </header>
+
+  <div id="settingsPanel">
+    <h3>Settings</h3>
+    <label>Name</label>
+    <input type="text" id="userName" placeholder="Your name" />
+    
+    <label>Theme</label>
+    <select id="themeSelect" onchange="changeTheme(this.value)">
+      <option value="dark">Dark</option>
+      <option value="light">Light</option>
+    </select>
+    
+    <label>Voice</label>
+    <select id="voiceToggle">
+      <option value="on">On</option>
+      <option value="off">Off</option>
+    </select>
+
+    <label>Image Generator</label>
+    <select id="imgToggle">
+      <option value="on">On</option>
+      <option value="off">Off</option>
+    </select>
+  </div>
+
+  <div class="login-form" id="loginForm">
+    <h2>Login</h2>
+    <input type="text" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+    <button onclick="login()">Login</button>
+    <p style="text-align:center; margin-top:10px;">No account? <a href="#" onclick="showSignup()">Sign Up</a></p>
+  </div>
+
+  <div class="login-form" id="signupForm" style="display:none;">
+    <h2>Sign Up</h2>
+    <input type="text" id="newEmail" placeholder="Email" />
+    <input type="password" id="newPassword" placeholder="Password" />
+    <button onclick="signup()">Sign Up</button>
+    <p style="text-align:center; margin-top:10px;">Have an account? <a href="#" onclick="showLogin()">Login</a></p>
+  </div>
+
+  <div class="chat-container" id="chatContainer">
+    <h2>Welcome, <span id="displayName">User</span>!</h2>
+    <p>This is your Nova AI assistant. Chat, generate images, and more!</p>
+    <!-- Add your AI chat logic here -->
+  </div>
+
+  <script>
+    function toggleSettings() {
+      const panel = document.getElementById("settingsPanel");
+      panel.style.display = panel.style.display === "block" ? "none" : "block";
+    }
+
+    function changeTheme(theme) {
+      document.body.style.backgroundColor = theme === "light" ? "#f0f0f0" : "#0a0f2c";
+      document.body.style.color = theme === "light" ? "#000" : "#fff";
+    }
+
+    function showSignup() {
+      document.getElementById("loginForm").style.display = "none";
+      document.getElementById("signupForm").style.display = "block";
+    }
+
+    function showLogin() {
+      document.getElementById("signupForm").style.display = "none";
+      document.getElementById("loginForm").style.display = "block";
+    }
+
+    function login() {
+      // Simulate login
+      document.getElementById("loginForm").style.display = "none";
+      document.getElementById("chatContainer").style.display = "block";
+      const name = document.getElementById("userName").value || "User";
+      document.getElementById("displayName").textContent = name;
+    }
+
+    function signup() {
+      // Simulate signup then go to login
+      alert("Account created!");
+      showLogin();
+    }
+  </script>
+</body>
+</html> garbage right asking me that I can't do anything right I can't do anything I can't do anything
