@@ -6,18 +6,20 @@
   <title>Nova AI</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #0a0f2c;
-      color: white;
       margin: 0;
       padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: rgba(10,15,44,0.9);
+      color: white;
+      backdrop-filter: blur(15px);
     }
     header {
-      background-color: #1a1f4c;
+      background-color: rgba(26,31,76,0.6);
       padding: 1em;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      border-bottom: 1px solid #555;
     }
     .title {
       font-size: 1.5em;
@@ -25,8 +27,8 @@
     .settings-btn {
       background: none;
       border: none;
-      color: white;
       font-size: 1.2em;
+      color: white;
       cursor: pointer;
     }
     #settingsPanel {
@@ -34,34 +36,47 @@
       position: fixed;
       top: 60px;
       right: 20px;
-      background: #1a1f4c;
+      background: rgba(26,31,76,0.9);
       padding: 1em;
       border-radius: 10px;
-      width: 250px;
+      width: 280px;
       box-shadow: 0 0 10px black;
+      backdrop-filter: blur(10px);
+      z-index: 1000;
     }
     label {
       display: block;
-      margin: 10px 0 5px;
+      margin-top: 10px;
     }
     input, select {
       width: 100%;
       padding: 5px;
+      margin-top: 5px;
       margin-bottom: 10px;
-    }
-    .login-form, .chat-container {
-      padding: 1em;
-    }
-    .chat-container {
-      display: none;
+      border: none;
+      border-radius: 5px;
     }
     button {
       background-color: #2979ff;
       color: white;
       border: none;
       padding: 10px;
-      cursor: pointer;
       width: 100%;
+      margin-top: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .login-form, .chat-container, .premium-panel {
+      padding: 1em;
+    }
+    .chat-container {
+      display: none;
+    }
+    .premium-panel {
+      display: none;
+      background: rgba(50,60,120,0.8);
+      border-radius: 10px;
+      margin-top: 20px;
     }
   </style>
 </head>
@@ -78,10 +93,21 @@
     
     <label>Theme</label>
     <select id="themeSelect" onchange="changeTheme(this.value)">
-      <option value="dark">Dark</option>
+      <option value="auto">Auto</option>
       <option value="light">Light</option>
+      <option value="dark">Dark</option>
+      <option value="amoled">AMOLED</option>
+      <option value="colorful">Colorful</option>
     </select>
-    
+
+    <label>Font Style</label>
+    <select id="fontSelect" onchange="changeFont(this.value)">
+      <option value="default">Default</option>
+      <option value="modern">Modern</option>
+      <option value="classic">Classic</option>
+      <option value="playful">Playful</option>
+    </select>
+
     <label>Voice</label>
     <select id="voiceToggle">
       <option value="on">On</option>
@@ -93,6 +119,9 @@
       <option value="on">On</option>
       <option value="off">Off</option>
     </select>
+
+    <label>Upload Icon</label>
+    <input type="file" accept="image/*" />
   </div>
 
   <div class="login-form" id="loginForm">
@@ -100,7 +129,7 @@
     <input type="text" id="email" placeholder="Email" />
     <input type="password" id="password" placeholder="Password" />
     <button onclick="login()">Login</button>
-    <p style="text-align:center; margin-top:10px;">No account? <a href="#" onclick="showSignup()">Sign Up</a></p>
+    <p style="text-align:center;">No account? <a href="#" onclick="showSignup()">Sign Up</a></p>
   </div>
 
   <div class="login-form" id="signupForm" style="display:none;">
@@ -108,24 +137,76 @@
     <input type="text" id="newEmail" placeholder="Email" />
     <input type="password" id="newPassword" placeholder="Password" />
     <button onclick="signup()">Sign Up</button>
-    <p style="text-align:center; margin-top:10px;">Have an account? <a href="#" onclick="showLogin()">Login</a></p>
+    <p style="text-align:center;">Have an account? <a href="#" onclick="showLogin()">Login</a></p>
   </div>
 
   <div class="chat-container" id="chatContainer">
     <h2>Welcome, <span id="displayName">User</span>!</h2>
-    <p>This is your Nova AI assistant. Chat, generate images, and more!</p>
-    <!-- Add your AI chat logic here -->
+    <p>Use Nova AI for chat, image, video & sound generation!</p>
+    
+    <button onclick="openPremium()">Premium Panel</button>
+
+    <div class="premium-panel" id="premiumPanel">
+      <h3>Premium Unlock</h3>
+      <p>Attempts left: <span id="attemptsLeft">5</span>/month</p>
+      <input type="text" id="premiumCode" placeholder="Enter code" />
+      <button onclick="submitCode()">Submit Code</button>
+      <p id="codeMessage" style="color:red;"></p>
+
+      <hr/>
+      <h4>Trial Access</h4>
+      <button onclick="startTrial()">Start 1-week Trial</button>
+      <p id="trialStatus"></p>
+
+      <hr/>
+      <h4>Other Unlocks</h4>
+      <ul>
+        <li>✅ Use 24h in a week → 1 week premium</li>
+        <li>🎉 Birthday? → Auto unlock</li>
+        <li>🧠 Pass 50-question quiz → Premium</li>
+      </ul>
+    </div>
   </div>
 
   <script>
+    let attemptsLeft = 5;
+    let trialUsed = false;
+
     function toggleSettings() {
       const panel = document.getElementById("settingsPanel");
       panel.style.display = panel.style.display === "block" ? "none" : "block";
     }
 
     function changeTheme(theme) {
-      document.body.style.backgroundColor = theme === "light" ? "#f0f0f0" : "#0a0f2c";
-      document.body.style.color = theme === "light" ? "#000" : "#fff";
+      const body = document.body;
+      if (theme === "light") {
+        body.style.background = "#fff";
+        body.style.color = "#000";
+      } else if (theme === "dark") {
+        body.style.background = "#0a0f2c";
+        body.style.color = "#fff";
+      } else if (theme === "amoled") {
+        body.style.background = "#000";
+        body.style.color = "#0ff";
+      } else if (theme === "colorful") {
+        body.style.background = "linear-gradient(to right, #ff5f6d, #ffc371)";
+        body.style.color = "#000";
+      } else {
+        // auto
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        changeTheme(isDark ? "dark" : "light");
+      }
+    }
+
+    function changeFont(font) {
+      const body = document.body;
+      const fonts = {
+        default: 'Segoe UI, sans-serif',
+        modern: 'Helvetica Neue, sans-serif',
+        classic: 'Georgia, serif',
+        playful: 'Comic Sans MS, cursive'
+      };
+      body.style.fontFamily = fonts[font] || fonts.default;
     }
 
     function showSignup() {
@@ -139,7 +220,6 @@
     }
 
     function login() {
-      // Simulate login
       document.getElementById("loginForm").style.display = "none";
       document.getElementById("chatContainer").style.display = "block";
       const name = document.getElementById("userName").value || "User";
@@ -147,10 +227,40 @@
     }
 
     function signup() {
-      // Simulate signup then go to login
       alert("Account created!");
       showLogin();
     }
+
+    function openPremium() {
+      const panel = document.getElementById("premiumPanel");
+      panel.style.display = panel.style.display === "block" ? "none" : "block";
+    }
+
+    function submitCode() {
+      const codeInput = document.getElementById("premiumCode").value;
+      const message = document.getElementById("codeMessage");
+      if (codeInput === "LIFETIME123") {
+        message.style.color = "green";
+        message.textContent = "✅ Code accepted! Premium unlocked.";
+      } else {
+        attemptsLeft--;
+        message.style.color = "red";
+        message.textContent = `❌ Incorrect code. Attempts left: ${attemptsLeft}`;
+        document.getElementById("attemptsLeft").textContent = attemptsLeft;
+        if (attemptsLeft <= 0) {
+          message.textContent += " Try again next month.";
+        }
+      }
+    }
+
+    function startTrial() {
+      if (trialUsed) {
+        document.getElementById("trialStatus").textContent = "You’ve already used your free trial.";
+      } else {
+        trialUsed = true;
+        document.getElementById("trialStatus").textContent = "✅ Trial activated for 7 days!";
+      }
+    }
   </script>
 </body>
-</html> garbage right asking me that I can't do anything right I can't do anything I can't do anything
+</html>
