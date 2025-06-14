@@ -7,169 +7,138 @@
   <style>
     body {
       margin: 0;
-      padding: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: rgba(10,15,44,0.9);
+      background: linear-gradient(to bottom right, #0a0f2c, #1a1f4c);
       color: white;
-      backdrop-filter: blur(15px);
+      transition: all 0.3s ease;
     }
-    header {
-      background-color: rgba(26,31,76,0.6);
-      padding: 1em;
+    .glass-header {
+      backdrop-filter: blur(12px);
+      background-color: rgba(0, 0, 30, 0.6);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid #555;
-    }
-    .title {
-      font-size: 1.5em;
-    }
-    .settings-btn {
-      background: none;
-      border: none;
-      font-size: 1.2em;
-      color: white;
-      cursor: pointer;
-    }
-    #settingsPanel {
-      display: none;
-      position: fixed;
-      top: 60px;
-      right: 20px;
-      background: rgba(26,31,76,0.9);
       padding: 1em;
-      border-radius: 10px;
-      width: 280px;
-      box-shadow: 0 0 10px black;
-      backdrop-filter: blur(10px);
-      z-index: 1000;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
-    label {
-      display: block;
-      margin-top: 10px;
+    .logo { font-size: 1.6em; font-weight: bold; }
+    .settings-icon {
+      font-size: 1.2em; background: none; border: none;
+      color: white; cursor: pointer;
     }
-    input, select {
-      width: 100%;
-      padding: 5px;
-      margin-top: 5px;
-      margin-bottom: 10px;
-      border: none;
-      border-radius: 5px;
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(15px);
+      border-radius: 12px;
+      margin: 20px;
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    input, select, button {
+      width: 100%; padding: 10px; margin: 10px 0;
+      border-radius: 8px; border: none; outline: none;
+      font-size: 1em;
     }
     button {
-      background-color: #2979ff;
-      color: white;
-      border: none;
-      padding: 10px;
-      width: 100%;
-      margin-top: 10px;
-      cursor: pointer;
-      border-radius: 5px;
+      background-color: #2979ff; color: white;
+      font-weight: bold; cursor: pointer; transition: 0.3s;
     }
-    .login-form, .chat-container, .premium-panel {
-      padding: 1em;
+    button:hover { background-color: #1a5fff; }
+    .hidden { display: none; }
+    .error-popup {
+      position: fixed; top: 20px; right: 20px;
+      background: red; color: white; padding: 1em;
+      border-radius: 10px; animation: shake 0.5s ease;
     }
-    .chat-container {
-      display: none;
+    @keyframes shake {
+      0% { transform: translateX(0px); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+      100% { transform: translateX(0px); }
     }
-    .premium-panel {
-      display: none;
-      background: rgba(50,60,120,0.8);
-      border-radius: 10px;
-      margin-top: 20px;
+    .feature-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+    .feature-btns button {
+      flex: 1 1 calc(50% - 10px); min-width: 120px;
+    }
+    .locked {
+      background-color: rgba(255,0,0,0.2);
+      padding: 1em; border-radius: 10px;
+      text-align: center; margin-top: 20px;
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="title">Nova AI</div>
-    <button class="settings-btn" onclick="toggleSettings()">⚙️</button>
+  <header class="glass-header">
+    <div class="logo">Nova AI</div>
+    <button class="settings-icon" onclick="toggleSettings()">⚙️</button>
   </header>
 
-  <div id="settingsPanel">
+  <div class="glass-panel" id="settingsPanel" style="display:none;">
     <h3>Settings</h3>
-    <label>Name</label>
-    <input type="text" id="userName" placeholder="Your name" />
-    
-    <label>Theme</label>
+    <label>Name:</label><input type="text" id="userName" placeholder="Your name" />
+    <label>Theme:</label>
     <select id="themeSelect" onchange="changeTheme(this.value)">
-      <option value="auto">Auto</option>
-      <option value="light">Light</option>
       <option value="dark">Dark</option>
+      <option value="light">Light</option>
       <option value="amoled">AMOLED</option>
       <option value="colorful">Colorful</option>
     </select>
-
-    <label>Font Style</label>
+    <label>Font:</label>
     <select id="fontSelect" onchange="changeFont(this.value)">
-      <option value="default">Default</option>
       <option value="modern">Modern</option>
-      <option value="classic">Classic</option>
       <option value="playful">Playful</option>
+      <option value="classic">Classic</option>
     </select>
-
-    <label>Voice</label>
+    <label>Voice:</label>
     <select id="voiceToggle">
       <option value="on">On</option>
       <option value="off">Off</option>
     </select>
-
-    <label>Image Generator</label>
+    <label>Image Gen:</label>
     <select id="imgToggle">
       <option value="on">On</option>
       <option value="off">Off</option>
     </select>
-
-    <label>Upload Icon</label>
-    <input type="file" accept="image/*" />
   </div>
 
-  <div class="login-form" id="loginForm">
+  <div class="glass-panel" id="loginForm">
     <h2>Login</h2>
     <input type="text" id="email" placeholder="Email" />
     <input type="password" id="password" placeholder="Password" />
     <button onclick="login()">Login</button>
-    <p style="text-align:center;">No account? <a href="#" onclick="showSignup()">Sign Up</a></p>
+    <p>No account? <a href="#" onclick="showSignup()">Sign Up</a></p>
   </div>
 
-  <div class="login-form" id="signupForm" style="display:none;">
+  <div class="glass-panel hidden" id="signupForm">
     <h2>Sign Up</h2>
     <input type="text" id="newEmail" placeholder="Email" />
     <input type="password" id="newPassword" placeholder="Password" />
     <button onclick="signup()">Sign Up</button>
-    <p style="text-align:center;">Have an account? <a href="#" onclick="showLogin()">Login</a></p>
+    <p>Have an account? <a href="#" onclick="showLogin()">Login</a></p>
   </div>
 
-  <div class="chat-container" id="chatContainer">
+  <div class="glass-panel hidden" id="chatContainer">
     <h2>Welcome, <span id="displayName">User</span>!</h2>
-    <p>Use Nova AI for chat, image, video & sound generation!</p>
-    
-    <button onclick="openPremium()">Premium Panel</button>
-
-    <div class="premium-panel" id="premiumPanel">
-      <h3>Premium Unlock</h3>
-      <p>Attempts left: <span id="attemptsLeft">5</span>/month</p>
-      <input type="text" id="premiumCode" placeholder="Enter code" />
-      <button onclick="submitCode()">Submit Code</button>
-      <p id="codeMessage" style="color:red;"></p>
-
-      <hr/>
-      <h4>Trial Access</h4>
-      <button onclick="startTrial()">Start 1-week Trial</button>
-      <p id="trialStatus"></p>
-
-      <hr/>
-      <h4>Other Unlocks</h4>
-      <ul>
-        <li>✅ Use 24h in a week → 1 week premium</li>
-        <li>🎉 Birthday? → Auto unlock</li>
-        <li>🧠 Pass 50-question quiz → Premium</li>
-      </ul>
+    <div class="feature-btns">
+      <button>AI Chat</button>
+      <button>Voice Assistant</button>
+      <button class="premium">Video Generator</button>
+      <button class="premium">Sound Generator</button>
+    </div>
+    <div id="premiumInfo" class="locked">
+      Premium Required.<br>
+      <button onclick="startTrial()">Start Free Trial (once)</button><br>
+      <input type="text" id="codeInput" placeholder="Enter code" />
+      <button onclick="submitCode()">Unlock with Code</button>
     </div>
   </div>
 
   <script>
-    let attemptsLeft = 5;
+    let hasPremium = false;
     let trialUsed = false;
 
     function toggleSettings() {
@@ -178,52 +147,29 @@
     }
 
     function changeTheme(theme) {
-      const body = document.body;
-      if (theme === "light") {
-        body.style.background = "#fff";
-        body.style.color = "#000";
-      } else if (theme === "dark") {
-        body.style.background = "#0a0f2c";
-        body.style.color = "#fff";
-      } else if (theme === "amoled") {
-        body.style.background = "#000";
-        body.style.color = "#0ff";
-      } else if (theme === "colorful") {
-        body.style.background = "linear-gradient(to right, #ff5f6d, #ffc371)";
-        body.style.color = "#000";
-      } else {
-        // auto
-        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        changeTheme(isDark ? "dark" : "light");
-      }
+      document.body.className = theme;
     }
 
     function changeFont(font) {
-      const body = document.body;
-      const fonts = {
-        default: 'Segoe UI, sans-serif',
-        modern: 'Helvetica Neue, sans-serif',
-        classic: 'Georgia, serif',
-        playful: 'Comic Sans MS, cursive'
-      };
-      body.style.fontFamily = fonts[font] || fonts.default;
+      document.body.classList.remove("modern", "playful", "classic");
+      document.body.classList.add(font);
     }
 
     function showSignup() {
-      document.getElementById("loginForm").style.display = "none";
-      document.getElementById("signupForm").style.display = "block";
+      document.getElementById("loginForm").classList.add("hidden");
+      document.getElementById("signupForm").classList.remove("hidden");
     }
 
     function showLogin() {
-      document.getElementById("signupForm").style.display = "none";
-      document.getElementById("loginForm").style.display = "block";
+      document.getElementById("signupForm").classList.add("hidden");
+      document.getElementById("loginForm").classList.remove("hidden");
     }
 
     function login() {
-      document.getElementById("loginForm").style.display = "none";
-      document.getElementById("chatContainer").style.display = "block";
       const name = document.getElementById("userName").value || "User";
       document.getElementById("displayName").textContent = name;
+      document.getElementById("loginForm").classList.add("hidden");
+      document.getElementById("chatContainer").classList.remove("hidden");
     }
 
     function signup() {
@@ -231,35 +177,37 @@
       showLogin();
     }
 
-    function openPremium() {
-      const panel = document.getElementById("premiumPanel");
-      panel.style.display = panel.style.display === "block" ? "none" : "block";
+    function startTrial() {
+      if (trialUsed) {
+        alert("You’ve already used your free trial.");
+      } else {
+        hasPremium = true;
+        trialUsed = true;
+        unlockPremium();
+      }
     }
 
     function submitCode() {
-      const codeInput = document.getElementById("premiumCode").value;
-      const message = document.getElementById("codeMessage");
-      if (codeInput === "LIFETIME123") {
-        message.style.color = "green";
-        message.textContent = "✅ Code accepted! Premium unlocked.";
+      const code = document.getElementById("codeInput").value;
+      if (code === "LIFETIME123") {
+        hasPremium = true;
+        unlockPremium();
       } else {
-        attemptsLeft--;
-        message.style.color = "red";
-        message.textContent = `❌ Incorrect code. Attempts left: ${attemptsLeft}`;
-        document.getElementById("attemptsLeft").textContent = attemptsLeft;
-        if (attemptsLeft <= 0) {
-          message.textContent += " Try again next month.";
-        }
+        showError("Invalid Code!");
       }
     }
 
-    function startTrial() {
-      if (trialUsed) {
-        document.getElementById("trialStatus").textContent = "You’ve already used your free trial.";
-      } else {
-        trialUsed = true;
-        document.getElementById("trialStatus").textContent = "✅ Trial activated for 7 days!";
-      }
+    function unlockPremium() {
+      document.querySelectorAll(".premium").forEach(btn => btn.classList.remove("premium"));
+      document.getElementById("premiumInfo").style.display = "none";
+    }
+
+    function showError(msg) {
+      const popup = document.createElement("div");
+      popup.className = "error-popup";
+      popup.textContent = msg;
+      document.body.appendChild(popup);
+      setTimeout(() => popup.remove(), 2000);
     }
   </script>
 </body>
